@@ -83,7 +83,7 @@
                     <p>Explore the all new Clover Farm for St. Patrick's Day!</p>
                     <p>Farm clovers to charge up your Pot of Gold Egg!</p>
                     <p>Expand your farm, unlock farmers, and upgrade your land for better luck!</p>
-                    <h3>🪙 Pot of Gold Egg</p>
+                    <h3>🪙 Pot of Gold Egg</h3>
                     <p>The bigger it gets, the better the rewards!</p>
                     <div class="image-container">
                         <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Pot_Of_Gold_Egg_4e7d69422a.PNG" alt="Pot of Gold Egg">
@@ -134,7 +134,14 @@
                 </div>
             `;
         } else {
-            contentDiv.innerHTML = "<p>No new devblog available at the moment. Please check back later.</p>";
+            contentDiv.innerHTML = `
+                <div class="header">
+                    <h1>No New Devblog</h1>
+                </div>
+                <div class="section">
+                    <p>No new devblog available at the moment. Please check back later.</p>
+                </div>
+            `;
         }
     </script>
 </body>
