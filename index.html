@@ -181,6 +181,37 @@
         .refresh-button:hover {
             background-color: #e58935;
         }
+        
+        /* Credits section styling */
+        .credits {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        
+        .social-links {
+            margin-top: 10px;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #FF9D43;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: #e58935;
+            text-decoration: underline;
+        }
+        
+        .social-icon {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -197,8 +228,21 @@
     </div>
     
     <div class="footer">
-        <p>This site is not affiliated with Big Games.!! Site is made by MEE69.</p>
+        <p>This site is not affiliated with Big Games. This site is made to show early access of ps99 & Pets Go devblogs!.</p>
         <button class="refresh-button" onclick="fetchLatestDevblog()">Check for Updates</button>
+        
+        <!-- Credits section -->
+        <div class="credits">
+            <p>Created by MEE69</p>
+            <div class="social-links">
+                <a href="https://discord.gg/4f8BPbynNt" target="_blank">
+                    <span class="social-icon">🎮</span> Discord
+                </a>
+                <a href="https://x.com/petsim_99leaks" target="_blank">
+                    <span class="social-icon">🐦</span> Twitter
+                </a>
+            </div>
+        </div>
     </div>
 
     <script>
