@@ -48,10 +48,16 @@
         async function fetchAndDisplayContent() {
             try {
                 const response = await fetch(API_URL);
+
+                // Check if the response is successful
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
 
-                // Extract the 'content' field
-                const newContent = data.content;
+                // Navigate the JSON structure to find the content
+                const newContent = data?.data?.attributes?.content;
 
                 // Check if new content is available
                 if (newContent && newContent !== previousContent) {
