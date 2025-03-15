@@ -3,114 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Blog Content</title>
+    <title>Big Games DevBlog</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            text-align: center;
+            background-color: #f5f5f5;
         }
+        
         .header {
-            color: #ff9d43;
-            font-size: 35px;
+            text-align: center;
             margin-bottom: 30px;
         }
-        .content-section {
-            margin: 20px 0;
+        
+        .header h1 {
+            color: #FF9D43;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
-        .image-container img {
-            width: 100%;
-            max-width: 750px;
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .blog-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .blog-header {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .blog-header h2 {
+            color: #FF9D43;
+            margin-bottom: 10px;
+        }
+        
+        .blog-date {
+            color: #888;
+            font-style: italic;
+        }
+        
+        .blog-content img {
+            max-width: 100%;
             height: auto;
+            margin: 15px 0;
         }
-        .no-content {
-            color: #999;
-            font-size: 18px;
+        
+        .loading-container, .error-container {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+        .loading-spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #FF9D43;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #888;
+        }
+        
+        .refresh-button {
+            background-color: #FF9D43;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
             margin-top: 20px;
+        }
+        
+        .refresh-button:hover {
+            background-color: #e58935;
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>Big Games DevBlog</h1>
+        <p>Latest updates and news from Big Games</p>
+    </div>
+    
     <div id="content">
-        <h1>Loading content...</h1>
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading latest devblog...</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This site is not affiliated with Big Games. It simply displays content from their public API.</p>
+        <button class="refresh-button" onclick="fetchLatestDevblog()">Check for Updates</button>
     </div>
 
     <script>
         // API endpoint
-        const API_URL = "https://blogapi.biggames.io/api/articles/1983?populate=*";
-
-        // Variable to store previously loaded content
-        let previousContent = "";
-
-        // Function to fetch and display content
-        async function fetchAndDisplayContent() {
+        const API_URL = 'https://blogapi.biggames.io/api/articles/1983?populate=*';
+        
+        // Function to fetch the devblog data
+        async function fetchLatestDevblog() {
+            const contentElement = document.getElementById('content');
+            
+            // Show loading state
+            contentElement.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading latest devblog...</p>
+                </div>
+            `;
+            
             try {
+                // Fetch data from API
                 const response = await fetch(API_URL);
-
-                // Check if the response is successful
+                
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error('Network response was not ok');
                 }
-
+                
                 const data = await response.json();
-
-                // Navigate the JSON structure to find the content
-                const newContent = data?.data?.attributes?.content;
-
-                // Check if new content is available
-                if (newContent && newContent !== previousContent) {
-                    previousContent = newContent; // Update the previous content
-                    displayContent(newContent); // Update the HTML
-                } else if (!newContent || newContent === previousContent) {
-                    displayNoNewContent(); // Display message for no new content
+                
+                // Check if the content exists
+                if (data && data.data && data.data.attributes && 
+                    data.data.attributes.TitleDesc && 
+                    data.data.attributes.TitleDesc.content) {
+                    
+                    // Display the content
+                    displayDevblog(data.data.attributes);
+                } else {
+                    // No content available
+                    showNoContentMessage();
                 }
             } catch (error) {
-                console.error("Error fetching content:", error);
-                document.getElementById("content").innerHTML = `
-                    <h1>Error loading content</h1>
-                    <p>Unable to fetch the latest content. Please try again later.</p>
+                console.error('Error fetching devblog:', error);
+                
+                // Show error message
+                contentElement.innerHTML = `
+                    <div class="error-container">
+                        <p>Oops! Something went wrong while fetching the latest devblog.</p>
+                        <p>Error: ${error.message}</p>
+                        <button class="refresh-button" onclick="fetchLatestDevblog()">Try Again</button>
+                    </div>
                 `;
             }
         }
-
-        // Function to dynamically update the HTML with new content
-        function displayContent(content) {
-            const contentDiv = document.getElementById("content");
-
-            // Convert plain text content with embedded URLs into clickable HTML
-            const htmlContent = content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-
-            // Generate HTML with the content
-            contentDiv.innerHTML = `
-                <div class="header">
-                    <h1>Latest Devblog</h1>
-                </div>
-                <div class="content-section">
-                    ${htmlContent}
-                </div>
-            `;
-        }
-
-        // Function to display a message when there is no new content
-        function displayNoNewContent() {
-            const contentDiv = document.getElementById("content");
-            contentDiv.innerHTML = `
-                <div class="header">
-                    <h1>Latest Devblog</h1>
-                </div>
-                <div class="no-content">
-                    <p>No new devblog. Check back later!</p>
+        
+        // Function to display the devblog content
+        function displayDevblog(attributes) {
+            const contentElement = document.getElementById('content');
+            
+            // Extract header information
+            const title = attributes.Header?.title || 'Untitled';
+            const description = attributes.Header?.descriptionshort || '';
+            const date = attributes.Header?.date || '';
+            
+            // Extract the HTML content
+            const htmlContent = attributes.TitleDesc?.content || '';
+            
+            // Create the blog container
+            contentElement.innerHTML = `
+                <div class="blog-container">
+                    <div class="blog-header">
+                        <h2>${title}</h2>
+                        <p>${description}</p>
+                        <div class="blog-date">${formatDate(date)}</div>
+                    </div>
+                    <div class="blog-content">
+                        ${htmlContent}
+                    </div>
                 </div>
             `;
         }
-
-        // Periodically check for new content
-        setInterval(fetchAndDisplayContent, 30000); // Check every 30 seconds
-
-        // Initial fetch
-        fetchAndDisplayContent();
+        
+        // Function to show a message when no content is available
+        function showNoContentMessage() {
+            const contentElement = document.getElementById('content');
+            
+            contentElement.innerHTML = `
+                <div class="error-container">
+                    <p>No new devblog available at the moment.</p>
+                    <p>Please check back later for updates!</p>
+                    <button class="refresh-button" onclick="fetchLatestDevblog()">Check Again</button>
+                </div>
+            `;
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        // Initial fetch when page loads
+        document.addEventListener('DOMContentLoaded', fetchLatestDevblog);
     </script>
 </body>
 </html>
