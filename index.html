@@ -43,6 +43,7 @@
             border-bottom: 2px solid #eee;
             padding-bottom: 15px;
             margin-bottom: 20px;
+            text-align: center;
         }
         
         .blog-header h2 {
@@ -55,53 +56,86 @@
             font-style: italic;
         }
         
-        /* Force text alignment center for all content */
+        /* Center everything in the blog content */
         .blog-content {
-            text-align: center;
+            text-align: center !important;
         }
         
-        /* Make images centered */
-        .blog-content img {
-            max-width: 100%;
-            height: auto;
-            margin: 15px auto;
-            display: block;
-        }
-        
-        /* Add styling for text blocks to maintain center alignment */
+        /* Center all headings */
         .blog-content h1, .blog-content h2, .blog-content h3,
         .blog-content h4, .blog-content h5, .blog-content h6 {
-            text-align: center;
+            text-align: center !important;
+            margin: 20px auto !important;
+            width: 100% !important;
         }
         
-        /* Style for the "Featuring" heading */
-        .blog-content h2.featuring {
+        /* Center all paragraphs */
+        .blog-content p {
+            text-align: center !important;
+            margin: 10px auto !important;
+            width: 100% !important;
+        }
+        
+        /* Center all images */
+        .blog-content img {
+            display: block !important;
+            margin: 20px auto !important;
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        
+        /* Center all divs */
+        .blog-content div {
+            text-align: center !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        
+        /* Center all links */
+        .blog-content a {
+            text-align: center !important;
+            display: inline-block !important;
+        }
+        
+        /* Special styling for the "Raid Bosses" heading */
+        .blog-content h2.raid-bosses {
             color: #FF9D43;
             font-size: 2rem;
-            margin: 30px 0;
+            text-align: center !important;
+            width: 100% !important;
         }
         
-        /* Style for content blocks */
-        .content-block {
-            margin: 20px auto;
-            max-width: 800px;
+        /* Style the main blog title */
+        .blog-content h1.main-title {
+            color: #FF9D43;
+            font-size: 2.5rem;
+            text-align: center !important;
+            width: 100% !important;
         }
         
-        /* Style for the raid info section */
-        .raid-info {
-            margin: 15px auto;
-            max-width: 600px;
+        /* Style the description line */
+        .blog-content p.description {
+            font-size: 1.2rem;
+            margin: 15px auto !important;
+            width: 100% !important;
+            text-align: center !important;
         }
         
-        .raid-info p {
-            margin: 10px 0;
+        /* Style the date */
+        .blog-content p.date {
+            color: #888;
+            font-style: italic;
+            margin: 10px auto 30px auto !important;
+            width: 100% !important;
+            text-align: center !important;
         }
         
-        /* Make emoji icons stand out */
-        .icon {
-            font-size: 1.5rem;
-            margin-right: 5px;
-            display: inline-block;
+        /* Line separator */
+        .blog-content hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 30px auto;
+            width: 100%;
         }
         
         .loading-container, .error-container {
@@ -163,13 +197,13 @@
     </div>
     
     <div class="footer">
-        <p>This site is not affiliated with Big Games. It simply displays Early access to devblogs.</p>
+        <p>This site is not affiliated with Big Games.!! Site is made by MEE69.</p>
         <button class="refresh-button" onclick="fetchLatestDevblog()">Check for Updates</button>
     </div>
 
     <script>
         // API endpoint
-        const API_URL = 'https://blogapi.biggames.io/api/articles/1950?populate=*';
+        const API_URL = 'https://blogapi.biggames.io/api/articles/1983?populate=*';
         
         // Function to fetch the devblog data
         async function fetchLatestDevblog() {
@@ -234,14 +268,18 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlContent, 'text/html');
             
-            // Force center alignment for all headings
+            // Center all headings and add special styling
             const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
             headings.forEach(heading => {
                 heading.style.textAlign = 'center';
+                heading.style.width = '100%';
+                heading.style.display = 'block';
+                heading.style.margin = '20px auto';
                 
-                // Special styling for "Featuring" heading
-                if (heading.textContent.trim() === 'Featuring') {
-                    heading.className = 'featuring';
+                // Apply special styling to "Raid Bosses" heading
+                if (heading.textContent.trim().includes('Raid Bosses')) {
+                    heading.className = 'raid-bosses';
+                    heading.style.color = '#FF9D43';
                 }
             });
             
@@ -249,14 +287,21 @@
             const paragraphs = doc.querySelectorAll('p');
             paragraphs.forEach(paragraph => {
                 paragraph.style.textAlign = 'center';
+                paragraph.style.width = '100%';
+                paragraph.style.margin = '10px auto';
             });
             
             // Center all images
             const images = doc.querySelectorAll('img');
             images.forEach(img => {
-                // Create a wrapper div for the image if it doesn't have one
+                img.style.display = 'block';
+                img.style.margin = '20px auto';
+                img.style.maxWidth = '100%';
+                
+                // Create a div wrapper for the image
                 const wrapper = doc.createElement('div');
                 wrapper.style.textAlign = 'center';
+                wrapper.style.width = '100%';
                 wrapper.style.margin = '20px auto';
                 
                 // Replace the image with the wrapper containing the image
@@ -265,11 +310,19 @@
                 wrapper.appendChild(img);
             });
             
-            // Wrap content blocks in centered divs
-            const contentBlocks = doc.querySelectorAll('div');
-            contentBlocks.forEach(block => {
-                block.style.textAlign = 'center';
-                block.style.margin = '0 auto';
+            // Center all divs
+            const divs = doc.querySelectorAll('div');
+            divs.forEach(div => {
+                div.style.textAlign = 'center';
+                div.style.marginLeft = 'auto';
+                div.style.marginRight = 'auto';
+            });
+            
+            // Center all links
+            const links = doc.querySelectorAll('a');
+            links.forEach(link => {
+                link.style.textAlign = 'center';
+                link.style.display = 'inline-block';
             });
             
             // Get the processed HTML content
@@ -289,12 +342,44 @@
                 </div>
             `;
             
-            // After rendering, ensure images are properly centered
-            const renderedImages = document.querySelectorAll('.blog-content img');
-            renderedImages.forEach(img => {
-                img.style.display = 'block';
-                img.style.margin = '15px auto';
-            });
+            // Apply additional styling after the content is rendered
+            setTimeout(() => {
+                // Force center alignment on all elements
+                const allElements = document.querySelectorAll('.blog-content *');
+                allElements.forEach(el => {
+                    // Don't apply text-align to images
+                    if (el.tagName !== 'IMG') {
+                        el.style.textAlign = 'center';
+                    }
+                    
+                    // For block elements, center them
+                    if (window.getComputedStyle(el).display === 'block') {
+                        el.style.marginLeft = 'auto';
+                        el.style.marginRight = 'auto';
+                    }
+                });
+                
+                // Force center all headings
+                const renderedHeadings = document.querySelectorAll('.blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6');
+                renderedHeadings.forEach(heading => {
+                    heading.style.textAlign = 'center';
+                    heading.style.width = '100%';
+                    
+                    // Special styling for "Raid Bosses" heading
+                    if (heading.textContent.trim().includes('Raid Bosses')) {
+                        heading.style.color = '#FF9D43';
+                        heading.style.fontSize = '2rem';
+                    }
+                });
+                
+                // Force center all images
+                const renderedImages = document.querySelectorAll('.blog-content img');
+                renderedImages.forEach(img => {
+                    img.style.display = 'block';
+                    img.style.margin = '20px auto';
+                    img.style.maxWidth = '100%';
+                });
+            }, 100);
         }
         
         // Function to show a message when no content is available
