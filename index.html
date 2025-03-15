@@ -55,10 +55,18 @@
             font-style: italic;
         }
         
+        /* Updated image styling to center all images */
         .blog-content img {
             max-width: 100%;
             height: auto;
-            margin: 15px 0;
+            margin: 15px auto;
+            display: block;
+        }
+        
+        /* Add styling for thumbnail containers */
+        .thumbnail-container {
+            text-align: center;
+            margin: 20px 0;
         }
         
         .loading-container, .error-container {
@@ -185,7 +193,34 @@
             const date = attributes.Header?.date || '';
             
             // Extract the HTML content
-            const htmlContent = attributes.TitleDesc?.content || '';
+            let htmlContent = attributes.TitleDesc?.content || '';
+            
+            // Process the HTML content to ensure images are centered
+            // This creates a DOM parser to modify the HTML structure
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlContent, 'text/html');
+            
+            // Find all images in the content
+            const images = doc.querySelectorAll('img');
+            
+            // Wrap each image in a centered container if it's not already in one
+            images.forEach(img => {
+                // Check if the image is already in a specially styled container
+                // If it's directly in the body or a paragraph, we'll wrap it
+                const parent = img.parentNode;
+                if (parent.tagName === 'BODY' || parent.tagName === 'P' || parent.tagName === 'DIV') {
+                    // Create a wrapper div with center alignment
+                    const wrapper = doc.createElement('div');
+                    wrapper.className = 'thumbnail-container';
+                    
+                    // Replace the image with the wrapper containing the image
+                    parent.replaceChild(wrapper, img);
+                    wrapper.appendChild(img);
+                }
+            });
+            
+            // Get the processed HTML content
+            htmlContent = doc.body.innerHTML;
             
             // Create the blog container
             contentElement.innerHTML = `
