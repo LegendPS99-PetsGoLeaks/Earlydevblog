@@ -55,7 +55,12 @@
             font-style: italic;
         }
         
-        /* Updated image styling to center all images */
+        /* Force text alignment center for all content */
+        .blog-content {
+            text-align: center;
+        }
+        
+        /* Make images centered */
         .blog-content img {
             max-width: 100%;
             height: auto;
@@ -63,10 +68,40 @@
             display: block;
         }
         
-        /* Add styling for thumbnail containers */
-        .thumbnail-container {
+        /* Add styling for text blocks to maintain center alignment */
+        .blog-content h1, .blog-content h2, .blog-content h3,
+        .blog-content h4, .blog-content h5, .blog-content h6 {
             text-align: center;
-            margin: 20px 0;
+        }
+        
+        /* Style for the "Featuring" heading */
+        .blog-content h2.featuring {
+            color: #FF9D43;
+            font-size: 2rem;
+            margin: 30px 0;
+        }
+        
+        /* Style for content blocks */
+        .content-block {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        
+        /* Style for the raid info section */
+        .raid-info {
+            margin: 15px auto;
+            max-width: 600px;
+        }
+        
+        .raid-info p {
+            margin: 10px 0;
+        }
+        
+        /* Make emoji icons stand out */
+        .icon {
+            font-size: 1.5rem;
+            margin-right: 5px;
+            display: inline-block;
         }
         
         .loading-container, .error-container {
@@ -128,7 +163,7 @@
     </div>
     
     <div class="footer">
-        <p>This site is not affiliated with Big Games. It simply displays content from their public API.</p>
+        <p>This site is not affiliated with Big Games. It simply displays Early access to devblogs.</p>
         <button class="refresh-button" onclick="fetchLatestDevblog()">Check for Updates</button>
     </div>
 
@@ -195,28 +230,46 @@
             // Extract the HTML content
             let htmlContent = attributes.TitleDesc?.content || '';
             
-            // Process the HTML content to ensure images are centered
-            // This creates a DOM parser to modify the HTML structure
+            // Process the HTML content to center everything
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlContent, 'text/html');
             
-            // Find all images in the content
-            const images = doc.querySelectorAll('img');
-            
-            // Wrap each image in a centered container if it's not already in one
-            images.forEach(img => {
-                // Check if the image is already in a specially styled container
-                // If it's directly in the body or a paragraph, we'll wrap it
-                const parent = img.parentNode;
-                if (parent.tagName === 'BODY' || parent.tagName === 'P' || parent.tagName === 'DIV') {
-                    // Create a wrapper div with center alignment
-                    const wrapper = doc.createElement('div');
-                    wrapper.className = 'thumbnail-container';
-                    
-                    // Replace the image with the wrapper containing the image
-                    parent.replaceChild(wrapper, img);
-                    wrapper.appendChild(img);
+            // Force center alignment for all headings
+            const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headings.forEach(heading => {
+                heading.style.textAlign = 'center';
+                
+                // Special styling for "Featuring" heading
+                if (heading.textContent.trim() === 'Featuring') {
+                    heading.className = 'featuring';
                 }
+            });
+            
+            // Center all paragraphs
+            const paragraphs = doc.querySelectorAll('p');
+            paragraphs.forEach(paragraph => {
+                paragraph.style.textAlign = 'center';
+            });
+            
+            // Center all images
+            const images = doc.querySelectorAll('img');
+            images.forEach(img => {
+                // Create a wrapper div for the image if it doesn't have one
+                const wrapper = doc.createElement('div');
+                wrapper.style.textAlign = 'center';
+                wrapper.style.margin = '20px auto';
+                
+                // Replace the image with the wrapper containing the image
+                const parent = img.parentNode;
+                parent.replaceChild(wrapper, img);
+                wrapper.appendChild(img);
+            });
+            
+            // Wrap content blocks in centered divs
+            const contentBlocks = doc.querySelectorAll('div');
+            contentBlocks.forEach(block => {
+                block.style.textAlign = 'center';
+                block.style.margin = '0 auto';
             });
             
             // Get the processed HTML content
@@ -235,6 +288,13 @@
                     </div>
                 </div>
             `;
+            
+            // After rendering, ensure images are properly centered
+            const renderedImages = document.querySelectorAll('.blog-content img');
+            renderedImages.forEach(img => {
+                img.style.display = 'block';
+                img.style.margin = '15px auto';
+            });
         }
         
         // Function to show a message when no content is available
