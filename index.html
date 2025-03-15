@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pet Simulator 99 - Raid Bosses!</title>
+    <title>Dynamic Blog Content</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,132 +17,74 @@
             font-size: 35px;
             margin-bottom: 30px;
         }
-        .section {
-            margin: 40px 0;
-        }
-        .image-container {
-            width: 100%;
-            max-width: 750px;
-            margin: 20px auto;
+        .content-section {
+            margin: 20px 0;
         }
         .image-container img {
             width: 100%;
+            max-width: 750px;
             height: auto;
         }
     </style>
 </head>
 <body>
     <div id="content">
-        <!-- Content will be dynamically inserted here -->
+        <h1>Loading content...</h1>
     </div>
+
     <script>
-        // Boolean variable to control the display of devblog content
-        var showDevblogContent = false; // Set to true to show devblog content
+        // API endpoint
+        const API_URL = "https://blogapi.biggames.io/api/articles/1983?populate=*";
 
-        var contentDiv = document.getElementById("content");
-        if (showDevblogContent) {
+        // Variable to store previously loaded content
+        let previousContent = "";
+
+        // Function to fetch and display content
+        async function fetchAndDisplayContent() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                // Extract the 'content' field
+                const newContent = data.content;
+
+                // Check if the content is different from the previous content
+                if (newContent && newContent !== previousContent) {
+                    previousContent = newContent; // Update the previous content
+                    displayContent(newContent); // Update the HTML
+                }
+            } catch (error) {
+                console.error("Error fetching content:", error);
+                document.getElementById("content").innerHTML = `
+                    <h1>Error loading content</h1>
+                    <p>Unable to fetch the latest content. Please try again later.</p>
+                `;
+            }
+        }
+
+        // Function to dynamically update the HTML
+        function displayContent(content) {
+            const contentDiv = document.getElementById("content");
+
+            // Convert plain text content with embedded URLs into clickable HTML
+            const htmlContent = content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+
+            // Generate HTML with the content
             contentDiv.innerHTML = `
                 <div class="header">
-                    <h1>Pet Simulator 99 - Raid Bosses!</h1>
-                    <p>Raid Bosses!</p>
+                    <h1>Latest Content</h1>
                 </div>
-
-                <div class="image-container">
-                    <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/thumbnail_PSGO_st_patrick_d81afb7db1.png" alt="St. Patrick's Event">
-                </div>
-
-                <div class="section">
-                    <h2 style="color: #ff9d43;"><u>Featuring</u></h2>
-                    <h3>☘️ Clover Farm</h3>
-                    <p>Collect Clovers, grow your luck and hatch pets in the Clover Farm!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Clover_Farm_3bbc107bc0.PNG" alt="Clover Farm">
-                    </div>
-                    <h3>✨ Titanic Lucki Dominus</h3>
-                    <p>Hatch the Titanic Lucki Dominus!</p>
-                    <p>The Dominus is hatched from the Pot of Gold Egg.</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Titanic_96da118903.PNG" alt="Titanic">
-                    </div>
-                    <h3>✨ Huge Pets</h3>
-                    <p>Hatch the Huge Leprechaun Dog and the Huge Clover Butterfly!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Huge_Pets_777cff4482.PNG" alt="Huge Pets">
-                    </div>
-                    <h3>🐾 New Pets</h3>
-                    <p>Discover brand new pets!</p>
-                    <p>Collect our favorites - Clover Fairy, Clover Dragon, and Clover Axolotl</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/New_Pets_402a6082f9.PNG" alt="New Pets">
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2 style="color: #ff9d43;"><u>Event</u></h2>
-                    <h3>☘️ Clover Farm</h3>
-                    <p>Explore the all new Clover Farm for St. Patrick's Day!</p>
-                    <p>Farm clovers to charge up your Pot of Gold Egg!</p>
-                    <p>Expand your farm, unlock farmers, and upgrade your land for better luck!</p>
-                    <h3>🪙 Pot of Gold Egg</h3>
-                    <p>The bigger it gets, the better the rewards!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Pot_Of_Gold_Egg_4e7d69422a.PNG" alt="Pot of Gold Egg">
-                    </div>
-                    <h3>📦 Hopper Machine</h3>
-                    <p>Use the Hopper Machine to maximize your farming skills!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Hopper_9f0ee72fa3.PNG" alt="Hopper">
-                    </div>
-                    <h3>🤞 Lucky Rain</h3>
-                    <p>It's raining luck!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Ultra_Lucky_Rain_Potion_2_429af417ca.png" alt="Ultra Lucky Rain Potion">
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2 style="color: #ff9d43;"><u>Exclusive</u></h2>
-                    <h3>🎁 Clover Gift</h3>
-                    <p>A festive gift bag packed with lucky pets!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/icon_clover_bag_e5d7ccf7cf.png" alt="Clover Gift Bag">
-                    </div>
-                    <h3>🌈 Lucky Forever Pack</h3>
-                    <p>The ultimate luck boost!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/foreverpack_f8ba897e67.png" alt="Forever Pack">
-                    </div>
-                    <h3>🎉 Ultra Lucky Rain Potion</h3>
-                    <p>Manually start an ULTRA Lucky Rain weather event for your server!</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/Ultra_Lucky_Rain_Potion_3_bb1b394093.png" alt="Ultra Lucky Rain Potion">
-                    </div>
-                    <h3>💚 The Clover Pack</h3>
-                    <p>A powerful collection of exclusive pets and goodies</p>
-                    <div class="image-container">
-                        <img src="https://bigblog-storage.s3.us-east-1.amazonaws.com/cloverpack_bf5f947b9f.png" alt="Clover Pack">
-                    </div>
-                </div>
-
-                <div class="section">
-                    <p><strong>Happy St. Patrick's Day!</strong></p>
-                    <p><em>~ Preston & PETS GO Dev Team</em></p>
-                    <div>
-                        <a href="https://twitter.com/intent/tweet?url=https://www.biggames.io/post/pets-go-update-22">Twitter</a>
-                        <a href="https://www.biggames.io/developer-blogs/categories/pets-go">Pet RNG!</a>
-                    </div>
-                </div>
-            `;
-        } else {
-            contentDiv.innerHTML = `
-                <div class="header">
-                    <h1>No New Devblog</h1>
-                </div>
-                <div class="section">
-                    <p>No new devblog available at the moment. Please check back later.</p>
+                <div class="content-section">
+                    ${htmlContent}
                 </div>
             `;
         }
+
+        // Periodically check for new content
+        setInterval(fetchAndDisplayContent, 30000); // Check every 30 seconds
+
+        // Initial fetch
+        fetchAndDisplayContent();
     </script>
 </body>
 </html>
