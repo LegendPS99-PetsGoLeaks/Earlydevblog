@@ -349,6 +349,10 @@
     <script>
         // API endpoints
         const ALL_BLOGS_API_URL = 'https://blogapi.biggames.io/api/articles';
+        const BLOG_API_URL = 'https://blogapi.biggames.io/api/articles/';
+        
+        // Cache for storing blog data
+        let blogCache = {};
         
         // Pagination variables
         let currentPage = 1;
@@ -385,8 +389,21 @@
                         totalPages = data.meta.pagination.pageCount || 1;
                     }
                     
+                    // Cache the blog data
+                    data.data.forEach(blog => {
+                        blogCache[blog.id] = blog;
+                    });
+                    
                     // Display the archive list
                     displayDevblogList(data.data, page, totalPages);
+                    
+                    // Check if there's a blog parameter in the URL to show a specific blog
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const blogId = urlParams.get('blog');
+                    
+                    if (blogId) {
+                        viewBlog(blogId);
+                    }
                 } else {
                     // No articles available
                     showNoContentMessage();
@@ -409,7 +426,6 @@
         function displayDevblogList(blogs, currentPage, totalPages) {
             const contentElement = document.getElementById('archive-content');
             
-            // Create the list of blogs
             let blogsList = '';
             
             blogs.forEach(blog => {
@@ -423,7 +439,7 @@
                 
                 blogsList += `
                     <div class="blog-item">
-                        <div class="blog-title" onclick="viewBlog(${id})">${title}</div>
+                        <div class="blog-title" onclick="viewBlog('${id}')">${title}</div>
                         <div class="blog-description">${description}</div>
                         <div class="blog-date">${formatDate(date)}</div>
                     </div>
@@ -466,7 +482,6 @@
                 } else {
                     paginationHTML += `<button class="page-button disabled">Next</button>`;
                 }
-                }
                 
                 paginationHTML += `</div>`;
             }
@@ -475,17 +490,94 @@
             contentElement.innerHTML = `
                 <div class="archive-container">
                     <h2 class="archive-title">DevBlog Archive</h2>
-                    <ul class="archive-list">
-                        ${articlesList}
-                    </ul>
+                    <div class="blog-list">
+                        ${blogsList}
+                    </div>
                     ${paginationHTML}
                 </div>
             `;
+            
+            // Make sure the archive view is visible and blog view is hidden
+            document.getElementById('archive-content').style.display = 'block';
+            document.getElementById('blog-view').style.display = 'none';
+        }
+        
+        // Function to view a specific blog
+        async function viewBlog(blogId) {
+            let blog;
+            
+            // Check if the blog is in the cache
+            if (blogCache[blogId]) {
+                blog = blogCache[blogId];
+                displayBlog(blog);
+            } else {
+                // If not in cache, fetch from API
+                try {
+                    const response = await fetch(`${BLOG_API_URL}${blogId}?populate=*`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data && data.data) {
+                        blog = data.data;
+                        // Cache the blog
+                        blogCache[blogId] = blog;
+                        displayBlog(blog);
+                    } else {
+                        throw new Error('Blog not found');
+                    }
+                } catch (error) {
+                    console.error('Error fetching blog:', error);
+                    alert('Error loading blog: ' + error.message);
+                }
+            }
+            
+            // Update URL with blog ID
+            const url = new URL(window.location);
+            url.searchParams.set('blog', blogId);
+            window.history.pushState({}, '', url);
+        }
+        
+        // Function to display a blog
+        function displayBlog(blog) {
+            const attributes = blog.attributes;
+            
+            // Extract blog information
+            const title = attributes.Header?.title || 'Untitled';
+            const date = attributes.Header?.date || attributes.createdAt || '';
+            const content = attributes.Content?.content || '';
+            
+            // Update the blog view elements
+            document.getElementById('blog-title').textContent = title;
+            document.getElementById('blog-date').textContent = formatDate(date);
+            document.getElementById('blog-content').innerHTML = content;
+            
+            // Hide archive view and show blog view
+            document.getElementById('archive-content').style.display = 'none';
+            document.getElementById('blog-view').style.display = 'block';
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Function to show the archive list
+        function showArchiveList() {
+            // Hide blog view and show archive view
+            document.getElementById('blog-view').style.display = 'none';
+            document.getElementById('archive-content').style.display = 'block';
+            
+            // Remove blog parameter from URL
+            const url = new URL(window.location);
+            url.searchParams.delete('blog');
+            window.history.pushState({}, '', url);
         }
         
         // Function to show a message when no content is available
         function showNoContentMessage() {
-            const contentElement = document.getElementById('content');
+            const contentElement = document.getElementById('archive-content');
             
             contentElement.innerHTML = `
                 <div class="error-container">
@@ -502,6 +594,18 @@
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString(undefined, options);
         }
+        
+        // Handle browser back button
+        window.addEventListener('popstate', function(event) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const blogId = urlParams.get('blog');
+            
+            if (blogId) {
+                viewBlog(blogId);
+            } else {
+                showArchiveList();
+            }
+        });
         
         // Initial fetch when page loads
         document.addEventListener('DOMContentLoaded', () => {
