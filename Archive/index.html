@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Games DevBlog Archive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #FF9D43;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-button {
+            background-color: #FF9D43;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        
+        .nav-button:hover {
+            background-color: #e58935;
+        }
+        
+        .archive-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .archive-title {
+            color: #FF9D43;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .archive-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .archive-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .archive-item:last-child {
+            border-bottom: none;
+        }
+        
+        .archive-item-title {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .archive-item-title:hover {
+            color: #FF9D43;
+        }
+        
+        .archive-item-date {
+            color: #888;
+            font-style: italic;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .page-button {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+            padding: 8px 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        
+        .page-button:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .page-button.active {
+            background-color: #FF9D43;
+            color: white;
+            border-color: #FF9D43;
+        }
+        
+        .page-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .loading-container, .error-container {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+        .loading-spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #FF9D43;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #888;
+        }
+        
+        .refresh-button {
+            background-color: #FF9D43;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        .refresh-button:hover {
+            background-color: #e58935;
+        }
+        
+        /* Credits section styling */
+        .credits {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        
+        .social-links {
+            margin-top: 10px;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #FF9D43;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: #e58935;
+            text-decoration: underline;
+        }
+        
+        .social-icon {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PS99 & Pets-GO DevBlogs</h1>
+        <p>Archive of past devblogs.</p>
+    </div>
+    
+    <div class="navigation">
+        <a href="index.html" class="nav-button">Latest DevBlog</a>
+        <a href="archive.html" class="nav-button">Archive</a>
+    </div>
+    
+    <div id="content">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading devblog archive...</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This site is not affiliated with Big Games. This site is made to provide early access to PS99 and Pets Go devblogs!</p>
+        <button class="refresh-button" onclick="fetchDevblogArchive()">Refresh Archive</button>
+        
+        <!-- Credits section -->
+        <div class="credits">
+            <p>Created by MEE69</p>
+            <div class="social-links">
+                <a href="https://discord.gg/4f8BPbynNt" target="_blank">
+                    <span class="social-icon">🎮</span> Discord
+                </a>
+                <a href="https://x.com/petsim_99leaks" target="_blank">
+                    <span class="social-icon">🐦</span> Twitter
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API endpoint for listing articles
+        const API_URL = 'https://blogapi.biggames.io/api/articles';
+        
+        // Current page and items per page
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let totalPages = 1;
+        
+        // Function to fetch the devblog archive
+        async function fetchDevblogArchive(page = 1) {
+            const contentElement = document.getElementById('content');
+            currentPage = page;
+            
+            // Show loading state
+            contentElement.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading devblog archive...</p>
+                </div>
+            `;
+            
+            try {
+                // Fetch data from API with pagination
+                const response = await fetch(`${API_URL}?pagination[page]=${page}&pagination[pageSize]=${itemsPerPage}&sort=createdAt:desc&populate=*`);
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                // Check if articles exist
+                if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
+                    // Get pagination data
+                    if (data.meta && data.meta.pagination) {
+                        totalPages = data.meta.pagination.pageCount || 1;
+                    }
+                    
+                    // Display the archive
+                    displayDevblogArchive(data.data, page, totalPages);
+                } else {
+                    // No articles available
+                    showNoContentMessage();
+                }
+            } catch (error) {
+                console.error('Error fetching devblog archive:', error);
+                
+                // Show error message
+                contentElement.innerHTML = `
+                    <div class="error-container">
+                        <p>Oops! Something went wrong while fetching the devblog archive.</p>
+                        <p>Error: ${error.message}</p>
+                        <button class="refresh-button" onclick="fetchDevblogArchive()">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Function to display the devblog archive
+        function displayDevblogArchive(articles, currentPage, totalPages) {
+            const contentElement = document.getElementById('content');
+            
+            // Create the list of articles
+            let articlesList = '';
+            
+            articles.forEach(article => {
+                const id = article.id;
+                const attributes = article.attributes;
+                
+                // Extract header information
+                const title = attributes.Header?.title || 'Untitled';
+                const date = attributes.Header?.date || attributes.createdAt || '';
+                
+                articlesList += `
+                    <li class="archive-item">
+                        <a href="blog.html?id=${id}" class="archive-item-title">${title}</a>
+                        <span class="archive-item-date">${formatDate(date)}</span>
+                    </li>
+                `;
+            });
+            
+            // Create pagination controls
+            let paginationHTML = '';
+            
+            if (totalPages > 1) {
+                paginationHTML = `<div class="pagination">`;
+                
+                // Previous button
+                if (currentPage > 1) {
+                    paginationHTML += `<button class="page-button" onclick="fetchDevblogArchive(${currentPage - 1})">Prev</button>`;
+                } else {
+                    paginationHTML += `<button class="page-button disabled">Prev</button>`;
+                }
+                
+                // Page numbers
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    if (i === currentPage) {
+                        paginationHTML += `<button class="page-button active">${i}</button>`;
+                    } else {
+                        paginationHTML += `<button class="page-button" onclick="fetchDevblogArchive(${i})">${i}</button>`;
+                    }
+                }
+                
+                // Next button
+                if (currentPage < totalPages) {
+                    paginationHTML += `<button class="page-button" onclick="fetchDevblogArchive(${currentPage + 1})">Next</button>`;
+                } else {
+                    paginationHTML += `<button class="page-button disabled">Next</button>`;
+                }
+                
+                paginationHTML += `</div>`;
+            }
+            
+            // Create the archive container
+            contentElement.innerHTML = `
+                <div class="archive-container">
+                    <h2 class="archive-title">DevBlog Archive</h2>
+                    <ul class="archive-list">
+                        ${articlesList}
+                    </ul>
+                    ${paginationHTML}
+                </div>
+            `;
+        }
+        
+        // Function to show a message when no content is available
+        function showNoContentMessage() {
+            const contentElement = document.getElementById('content');
+            
+            contentElement.innerHTML = `
+                <div class="error-container">
+                    <p>No devblogs available in the archive.</p>
+                    <button class="refresh-button" onclick="fetchDevblogArchive()">Check Again</button>
+                </div>
+            `;
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        // Initial fetch when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if there's a page parameter in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = parseInt(urlParams.get('page')) || 1;
+            
+            fetchDevblogArchive(page);
+        });
+    </script>
+</body>
+</html>
