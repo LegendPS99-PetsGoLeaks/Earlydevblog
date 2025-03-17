@@ -68,43 +68,47 @@
             margin-bottom: 20px;
         }
         
-        .archive-list {
+        .blog-list {
             list-style: none;
             padding: 0;
         }
         
-        .archive-item {
+        .blog-item {
             border-bottom: 1px solid #eee;
-            padding: 15px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px 0;
         }
         
-        .archive-item:last-child {
+        .blog-item:last-child {
             border-bottom: none;
         }
         
-        .archive-item-title {
+        .blog-title {
             font-weight: bold;
-            color: #333;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .archive-item-title:hover {
+            font-size: 1.3rem;
             color: #FF9D43;
+            margin-bottom: 10px;
+            cursor: pointer;
         }
         
-        .archive-item-date {
+        .blog-title:hover {
+            text-decoration: underline;
+        }
+        
+        .blog-description {
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .blog-date {
             color: #888;
             font-style: italic;
+            font-size: 0.9rem;
         }
         
         .pagination {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 30px;
         }
         
         .page-button {
@@ -131,6 +135,92 @@
         .page-button.disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        
+        .blog-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .blog-header {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .blog-header h2 {
+            color: #FF9D43;
+            margin-bottom: 10px;
+        }
+        
+        .blog-date-header {
+            color: #888;
+            font-style: italic;
+        }
+        
+        /* Center everything in the blog content */
+        .blog-content {
+            text-align: center !important;
+        }
+        
+        /* Center all headings */
+        .blog-content h1, .blog-content h2, .blog-content h3,
+        .blog-content h4, .blog-content h5, .blog-content h6 {
+            text-align: center !important;
+            margin: 20px auto !important;
+            width: 100% !important;
+        }
+        
+        /* Center all paragraphs */
+        .blog-content p {
+            text-align: center !important;
+            margin: 10px auto !important;
+            width: 100% !important;
+        }
+        
+        /* Center all images */
+        .blog-content img {
+            display: block !important;
+            margin: 20px auto !important;
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        
+        /* Center all divs */
+        .blog-content div {
+            text-align: center !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        
+        /* Center all links */
+        .blog-content a {
+            text-align: center !important;
+            display: inline-block !important;
+        }
+        
+        .back-to-list {
+            background-color: #FF9D43;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .back-to-list:hover {
+            background-color: #e58935;
         }
         
         .loading-container, .error-container {
@@ -212,7 +302,7 @@
 <body>
     <div class="header">
         <h1>PS99 & Pets-GO DevBlogs</h1>
-        <p>Archive of past devblogs.</p>
+        <p>Archive of all past devblogs.</p>
     </div>
     
     <div class="navigation">
@@ -220,16 +310,27 @@
         <a href="archive.html" class="nav-button">Archive</a>
     </div>
     
-    <div id="content">
+    <div id="archive-content">
         <div class="loading-container">
             <div class="loading-spinner"></div>
             <p>Loading devblog archive...</p>
         </div>
     </div>
     
+    <div id="blog-view" class="blog-container">
+        <div class="blog-header">
+            <h2 id="blog-title">Blog Title</h2>
+            <div id="blog-date" class="blog-date-header">Date</div>
+        </div>
+        <div id="blog-content" class="blog-content">
+            <!-- Blog content will be inserted here -->
+        </div>
+        <button class="back-to-list" onclick="showArchiveList()">Back to Archive</button>
+    </div>
+    
     <div class="footer">
         <p>This site is not affiliated with Big Games. This site is made to provide early access to PS99 and Pets Go devblogs!</p>
-        <button class="refresh-button" onclick="fetchDevblogArchive()">Refresh Archive</button>
+        <button class="refresh-button" onclick="fetchDevblogArchive(currentPage)">Refresh Archive</button>
         
         <!-- Credits section -->
         <div class="credits">
@@ -246,17 +347,17 @@
     </div>
 
     <script>
-        // API endpoint for listing articles
-        const API_URL = 'https://blogapi.biggames.io/api/articles';
+        // API endpoints
+        const ALL_BLOGS_API_URL = 'https://blogapi.biggames.io/api/articles';
         
-        // Current page and items per page
+        // Pagination variables
         let currentPage = 1;
-        const itemsPerPage = 10;
+        let itemsPerPage = 10;
         let totalPages = 1;
         
         // Function to fetch the devblog archive
         async function fetchDevblogArchive(page = 1) {
-            const contentElement = document.getElementById('content');
+            const contentElement = document.getElementById('archive-content');
             currentPage = page;
             
             // Show loading state
@@ -269,7 +370,7 @@
             
             try {
                 // Fetch data from API with pagination
-                const response = await fetch(`${API_URL}?pagination[page]=${page}&pagination[pageSize]=${itemsPerPage}&sort=createdAt:desc&populate=*`);
+                const response = await fetch(`${ALL_BLOGS_API_URL}?pagination[page]=${page}&pagination[pageSize]=${itemsPerPage}&sort=createdAt:desc&populate=*`);
                 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -284,8 +385,8 @@
                         totalPages = data.meta.pagination.pageCount || 1;
                     }
                     
-                    // Display the archive
-                    displayDevblogArchive(data.data, page, totalPages);
+                    // Display the archive list
+                    displayDevblogList(data.data, page, totalPages);
                 } else {
                     // No articles available
                     showNoContentMessage();
@@ -298,32 +399,34 @@
                     <div class="error-container">
                         <p>Oops! Something went wrong while fetching the devblog archive.</p>
                         <p>Error: ${error.message}</p>
-                        <button class="refresh-button" onclick="fetchDevblogArchive()">Try Again</button>
+                        <button class="refresh-button" onclick="fetchDevblogArchive(currentPage)">Try Again</button>
                     </div>
                 `;
             }
         }
         
-        // Function to display the devblog archive
-        function displayDevblogArchive(articles, currentPage, totalPages) {
-            const contentElement = document.getElementById('content');
+        // Function to display the devblog list
+        function displayDevblogList(blogs, currentPage, totalPages) {
+            const contentElement = document.getElementById('archive-content');
             
-            // Create the list of articles
-            let articlesList = '';
+            // Create the list of blogs
+            let blogsList = '';
             
-            articles.forEach(article => {
-                const id = article.id;
-                const attributes = article.attributes;
+            blogs.forEach(blog => {
+                const id = blog.id;
+                const attributes = blog.attributes;
                 
                 // Extract header information
                 const title = attributes.Header?.title || 'Untitled';
+                const description = attributes.Header?.descriptionshort || '';
                 const date = attributes.Header?.date || attributes.createdAt || '';
                 
-                articlesList += `
-                    <li class="archive-item">
-                        <a href="blog.html?id=${id}" class="archive-item-title">${title}</a>
-                        <span class="archive-item-date">${formatDate(date)}</span>
-                    </li>
+                blogsList += `
+                    <div class="blog-item">
+                        <div class="blog-title" onclick="viewBlog(${id})">${title}</div>
+                        <div class="blog-description">${description}</div>
+                        <div class="blog-date">${formatDate(date)}</div>
+                    </div>
                 `;
             });
             
@@ -362,6 +465,7 @@
                     paginationHTML += `<button class="page-button" onclick="fetchDevblogArchive(${currentPage + 1})">Next</button>`;
                 } else {
                     paginationHTML += `<button class="page-button disabled">Next</button>`;
+                }
                 }
                 
                 paginationHTML += `</div>`;
